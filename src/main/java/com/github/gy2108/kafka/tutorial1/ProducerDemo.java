@@ -49,7 +49,7 @@ public class ProducerDemo {
                         logger.error("Error Occurred while producing", e);
                     }
                 }
-            }).get();
+            }).get();  //get() is only for this demo, not to be used in demo
         }
 
         //flush data
