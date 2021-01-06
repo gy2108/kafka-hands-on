@@ -6,10 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
 public class ProducerDemo {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
 
         final Logger logger = LoggerFactory.getLogger(ProducerDemo.class);
 
@@ -24,11 +25,16 @@ public class ProducerDemo {
         //create producer
         KafkaProducer<String, String> producer = new KafkaProducer<String, String>(properties);
 
-        for (int i = 0; i < 50; i++) {
-            //create producer record
-            ProducerRecord<String, String> record = new ProducerRecord<>("first_topic", "hello world!!"
-                    + Integer.toString(i));
+        String topic = "first_topic";
 
+        for (int i = 0; i < 10; i++) {
+            String value = "hello world!!"+ Integer.toString(i);
+            String key = "id_" + Integer.toString(i);
+
+            //create producer record
+            ProducerRecord<String, String> record = new ProducerRecord<>(topic, key,value);
+
+            logger.info("Key: " + key);
             //send data
             producer.send(record, new Callback() {
                 @Override
@@ -43,7 +49,7 @@ public class ProducerDemo {
                         logger.error("Error Occurred while producing", e);
                     }
                 }
-            });
+            }).get();
         }
 
         //flush data
